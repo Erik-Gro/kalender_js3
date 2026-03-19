@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Kalenderblatt</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1 id="page-heading">Kalenderblatt</h1>
+      <button
+        id="theme-toggle"
+        aria-label="Thema wechseln"
+        title="Dark/Light Mode"
+      >
+        🌓
+      </button>
+    </header>
+
+    <main class="main-layout">
+      <section class="text-content">
+        <div class="info-card">
+          <h3 id="selected-date-display">Datum Details</h3>
+          <p id="info-paragraph"></p>
+          <p id="holiday-paragraph" class="holiday-alert"></p>
+        </div>
+      </section>
+
+      <section class="calendar-content">
+        <div class="calendar-controls">
+          <button id="btn-prev" aria-label="Vorheriger Monat">&lt;</button>
+          <h2 id="calendar-month-year"></h2>
+          <button id="btn-next" aria-label="Nächster Monat">&gt;</button>
+        </div>
+        <table id="calendar-table" aria-label="Monatskalender">
+          <thead>
+            <tr>
+              <th>Mo</th>
+              <th>Di</th>
+              <th>Mi</th>
+              <th>Do</th>
+              <th>Fr</th>
+              <th class="weekend">Sa</th>
+              <th class="weekend">So</th>
+            </tr>
+          </thead>
+          <tbody id="calendar-body"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <hr />
+
+    <section class="history-section">
+      <h2 id="history-heading">Historische Ereignisse</h2>
+      <div id="history-loading" class="loader hidden">
+        Lade historische Daten...
+      </div>
+      <ul id="history-list"></ul>
+    </section>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
