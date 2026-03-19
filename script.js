@@ -232,18 +232,24 @@ class CalendarApp {
   }
 
 async fetchHistoricalEvents(date) {
+    if (this.historyAbortController) {
+      this.historyAbortController.abort();
+    }
+
+    this.historyAbortController = new AbortController();
+    const { signal } = this.historyAbortController;
+
     const mm = String(date.getMonth() + 1).padStart(2, "0");
     const dd = String(date.getDate()).padStart(2, "0");
     const loader = document.getElementById("history-loading");
     const list = document.getElementById("history-list");
 
     this.updateEl("history-heading", `Ereignisse am ${date.getDate()}. ${this.monthsDE[date.getMonth()]}`);
-    
     list.style.opacity = "0.3";
     loader.classList.remove("hidden");
 
     try {
-      const resp = await fetch(`https://de.wikipedia.org/api/rest_v1/feed/onthisday/events/${mm}/${dd}`);
+      const resp = await fetch(`https://de.wikipedia.org/api/rest_v1/feed/onthisday/events/${mm}/${dd}`, { signal });
       const data = await resp.json();
       
       list.innerHTML = "";
@@ -254,9 +260,15 @@ async fetchHistoricalEvents(date) {
       });
       list.style.opacity = "1";
     } catch (err) {
-      list.innerHTML = "<li>Fehler beim Laden.</li>";
+      if (err.name === 'AbortError') {
+        console.log("Request aborted (new date selected fast).");
+      } else {
+        list.innerHTML = "<li>Fehler beim Laden.</li>";
+      }
     } finally {
-      loader.classList.add("hidden");
+      if (!signal.aborted) {
+        loader.classList.add("hidden");
+      }
     }
   }
 
