@@ -231,43 +231,32 @@ class CalendarApp {
     }
   }
 
-  async fetchHistoricalEvents(targetDate) {
-    const mm = String(targetDate.getMonth() + 1).padStart(2, "0");
-    const dd = String(targetDate.getDate()).padStart(2, "0");
-
-    this.updateEl(
-      "history-heading",
-      `Historische Ereignisse am ${targetDate.getDate()}. ${this.monthsDE[targetDate.getMonth()]}`,
-    );
-
+async fetchHistoricalEvents(date) {
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
     const loader = document.getElementById("history-loading");
     const list = document.getElementById("history-list");
-    list.innerHTML = "";
+
+    this.updateEl("history-heading", `Ereignisse am ${date.getDate()}. ${this.monthsDE[date.getMonth()]}`);
+    
+    list.style.opacity = "0.3";
     loader.classList.remove("hidden");
 
     try {
-      const response = await fetch(
-        `https://de.wikipedia.org/api/rest_v1/feed/onthisday/events/${mm}/${dd}`,
-      );
-      if (!response.ok) throw new Error("API Offline");
-
-      const data = await response.json();
-      loader.classList.add("hidden");
-
-      const events = data.events.slice(0, 5);
-      if (events.length === 0) {
-        list.innerHTML = "<li>Keine Ereignisse für dieses Datum gefunden.</li>";
-        return;
-      }
-
-      events.forEach((event) => {
+      const resp = await fetch(`https://de.wikipedia.org/api/rest_v1/feed/onthisday/events/${mm}/${dd}`);
+      const data = await resp.json();
+      
+      list.innerHTML = "";
+      data.events.slice(0, 5).forEach(e => {
         const li = document.createElement("li");
-        li.innerHTML = `<strong>${event.year}:</strong> ${event.text}`;
+        li.innerHTML = `<strong>${e.year}:</strong> ${e.text}`;
         list.appendChild(li);
       });
-    } catch (error) {
-      console.error("Fetch error:", error);
-      loader.textContent = "Fehler beim Laden der historischen Ereignisse.";
+      list.style.opacity = "1";
+    } catch (err) {
+      list.innerHTML = "<li>Fehler beim Laden.</li>";
+    } finally {
+      loader.classList.add("hidden");
     }
   }
 
